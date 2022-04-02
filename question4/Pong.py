@@ -79,7 +79,35 @@ class Paddle:
 # instantiating 
 paddle = Paddle(canvas, 'red')
 ball = Ball(canvas, 'red', 50, paddle)
+# functions of menu 
+def easy_mode():
+    ball.mode = 1
+    ball.score = 0
 
+def medium_mode():
+    ball.mode = 3
+    ball.score = 0
+
+
+def hard_mode():
+    ball.mode = 5
+    paddle.mode = 2
+    ball.score = 0
+
+def show_score():
+    messagebox.showinfo(title='SCORE',message=f"your score is {ball.score}")
+
+# create menu
+myMenu = Menu(root)
+root.config(menu=myMenu)
+optionMenu = Menu(myMenu, tearoff=False)
+myMenu.add_cascade(label="level", menu=optionMenu)
+optionMenu.add_command(label='easy' , command=easy_mode)
+optionMenu.add_command(label='medium' , command=medium_mode)
+optionMenu.add_command(label='hard' , command=hard_mode)
+myMenu.add_cascade(label='yourscore', command=show_score)
+
+# game 
 while ball.hitbottom == False:
     ball.move()
     paddle.draw()
