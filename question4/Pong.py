@@ -46,3 +46,32 @@ class Ball:
         if ball_pos[2] >= paddle_pos[0] and ball_pos[0] <= paddle_pos[2]:
             if ball_pos[3] >= paddle_pos[1] and ball_pos[3] <= paddle_pos[3]:
                 return True
+
+class Paddle:
+    def __init__(self, canvas, bgColor):
+        self.canvas = canvas
+        self.rect = canvas.create_rectangle(0,0, 100, 10, fill=bgColor)
+        self.deltax = 0 
+        self.mode = 1 # paddle's moving speed 
+        self.canvas.move(self.rect, 200, 300)
+        self.canvas.bind_all('<KeyPress-Right>', self.move_right)
+        self.canvas.bind_all('<KeyPress-Left>', self.move_left)
+
+    def draw(self):
+        self.canvas.move(self.rect, self.deltax, 0)
+        pos = self.canvas.coords(self.rect)
+
+        if pos[0] <= 0:
+            # preventing going out of frame
+            self.deltax = 0
+
+        if pos[2] >= 500:
+            # preventing going out of frame
+            self.deltax = 0 
+
+    def move_left(self, event):
+        """function to moving paddle to left"""
+        self.deltax = -2 * self.mode 
+    def move_right(self, event):
+        """function to moving paddle to right"""
+        self.deltax = 2 * self.mode 
