@@ -1,0 +1,48 @@
+from tkinter import * 
+from tkinter import messagebox
+import time
+
+
+# building a window
+root = Tk()
+
+#adding window title
+root.title("AP4002 Pong Game")
+root.resizable(False, False)
+canvas = Canvas(root, width=500, height=400, bg='turquoise')
+canvas.grid(row=0,column=0)
+
+class Ball:
+    def __init__(self, canvas,bgColor, size, paddle):
+        self.canvas = canvas
+        self.paddle = paddle 
+        self.circle = canvas.create_oval(30,30, size, size, fill=bgColor) # create ball 
+        self.canvas.move(self.circle, 245, 100)
+        self.mode = 1 # ball's moving speed 
+        self.deltax = self.mode
+        self.deltay = self.mode 
+        self.hitbottom = False
+        self.score = 0
+
+    def move(self):
+        self.canvas.move(self.circle, self.deltax, self.deltay)
+        ball_pos = canvas.coords(self.circle) 
+
+        if ball_pos[0] <= 0:
+            self.deltax = self.mode
+        if ball_pos[2] >= 500:
+            self.deltax = self.mode * -1
+        if ball_pos[1] <= 0:
+            self.deltay = self.mode 
+        if ball_pos[3] >= 400:
+            self.hitbottom = True
+        if self.hitPaddle(ball_pos):
+            self.deltay = self.mode * -1
+            self.score += 1 * self.mode 
+    
+    def hitPaddle(self, ball_pos):
+        """check that if ball hit the paddle"""
+        paddle_pos = self.canvas.coords(self.paddle.rect)
+        if ball_pos[2] >= paddle_pos[0] and ball_pos[0] <= paddle_pos[2]:
+            if ball_pos[3] >= paddle_pos[1] and ball_pos[3] <= paddle_pos[3]:
+                return True
