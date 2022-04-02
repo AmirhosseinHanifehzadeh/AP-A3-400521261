@@ -75,3 +75,18 @@ class Paddle:
     def move_right(self, event):
         """function to moving paddle to right"""
         self.deltax = 2 * self.mode 
+
+# instantiating 
+paddle = Paddle(canvas, 'red')
+ball = Ball(canvas, 'red', 50, paddle)
+
+while ball.hitbottom == False:
+    ball.move()
+    paddle.draw()
+    root.update_idletasks()
+    root.update()
+    time.sleep(0.001)
+
+# Game Over
+messagebox.showinfo(title = "GAVE OVER", message = "YOU LOST")
+root.update()
