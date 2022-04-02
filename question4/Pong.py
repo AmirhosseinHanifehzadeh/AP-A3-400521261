@@ -1,3 +1,11 @@
+"""
+options:
+    1. fix bug of paddle
+    2. create diffrentes mode (hard, medium, easy)
+        for each successful hit to the ball, player gain in 1 score easy mode, 2 score in medium mode and 5 score in hard mode
+    3. show player's score whenever wanted 
+"""
+
 from tkinter import * 
 from tkinter import messagebox
 import time
