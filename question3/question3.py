@@ -125,3 +125,112 @@ class Account:
         Result = namedtuple('Result' ,'transaction_code account_number time_utc transaction_id time')
         result = Result(conf_code.split('-')[0], conf_code.split('-')[1], time_utc, conf_code.split('-')[3], local_time)
         return result 
+
+def run_tests(test_class):
+    suite = unittest.TestLoader().loadTestsFromTestCase(test_class)
+    runner = unittest.TextTestRunner(verbosity=2)
+    runner.run(suite)
+
+class TestAccount(unittest.TestCase):
+    def test_create_timezone_1(self):
+        tz = TimeZone('ABC', -1, -30)
+        self.assertEqual('ABC', tz.name)
+        self.assertEqual(timedelta(hours=-1, minutes=-30), tz.offset)
+        
+    def test_create_timezone_2(self):
+        tz = TimeZone('ABC', 1, -30)
+        self.assertEqual('ABC', tz.name)
+        self.assertEqual(timedelta(hours=1, minutes=-30), tz.offset)
+        
+    def test_create_account(self):
+        account_number = 'A100'
+        first_name = 'FIRST'
+        last_name = 'LAST'
+        tz = TimeZone('TZ', 1, 30)
+        balance = Decimal('100')
+        
+        a = Account(account_number, first_name, last_name, tz, balance)
+        
+        self.assertEqual(account_number, a.account_number)
+        self.assertEqual(first_name, a.first_name)
+        self.assertEqual(last_name, a.last_name)
+        self.assertEqual(tz, a.timezone)
+        self.assertEqual(balance, a.balance)
+        
+    def test_create_account_blank_first_name(self):
+        account_number = 'A100'
+        first_name = ''
+        last_name = 'LAST'
+        tz = TimeZone('TZ', 1, 30)
+        balance = Decimal('100')
+        
+        with self.assertRaises(ValueError):
+            a = Account(account_number, first_name, last_name, tz, balance)
+            
+    def test_create_account_blank_first_name_2(self):
+        account_number = 'A100'
+        first_name = '  '
+        last_name = 'LAST'
+        tz = TimeZone('TZ', 1, 30)
+        balance = Decimal('100')
+        
+        with self.assertRaises(ValueError):
+            a = Account(account_number, first_name, last_name, tz, balance)
+            
+    def test_create_account_negative_balance(self):
+        account_number = 'A100'
+        first_name = '  '
+        last_name = 'LAST'
+        tz = TimeZone('TZ', 1, 30)
+        balance = Decimal('-100')
+        
+        with self.assertRaises(ValueError):
+            a = Account(account_number, first_name, last_name, tz, balance)
+            
+            
+    def test_account_withdraw_ok(self):
+        account_number = 'A100'
+        first_name = 'First'
+        last_name = 'LAST'
+        tz = TimeZone('TZ', 1, 30)
+        balance = Decimal('100')
+        
+        a = Account(account_number, first_name, last_name, tz, balance)
+        conf_code = a.withdraw(20)
+        self.assertTrue(conf_code.startswith('W-'))
+        self.assertEqual(balance-Decimal('20'), a.balance)
+
+    def test_confirmationcodeparser_accountNumber(self):
+        account_number = 'A100'
+        first_name = 'First'
+        last_name = 'LAST'
+        tz = TimeZone('TZ', 1, 30)
+        balance = Decimal('100')
+        
+        a = Account(account_number, first_name, last_name, tz, balance)
+        conf_code = a.withdraw(20)
+        result = a.confirmation_code_parser(conf_code)
+        self.assertEqual('A100', result.account_number)
+
+    def test_confirmationcodeparser_timezone(self):
+        account_number = 'A100'
+        first_name = 'First'
+        last_name = 'LAST'
+        tz = TimeZone('TZ', 1, 30)
+        balance = Decimal('100')
+        a = Account(account_number, first_name, last_name, tz, balance)
+        conf_code = a.withdraw(20)
+        result = a.confirmation_code_parser(conf_code)
+        print(f'local time: {result.time}')
+        print(f'time_utc:{result.time_utc}')
+
+    def test_getfullname(self):
+        account_number = 'A100'
+        first_name = 'First'
+        last_name = 'LAST'
+        tz = TimeZone('TZ', 1, 30)
+        balance = Decimal('100')
+        a = Account(account_number, first_name, last_name, tz, balance)
+        self.assertEqual('First LAST', a.fullname)
+
+run_tests(TestAccount)
